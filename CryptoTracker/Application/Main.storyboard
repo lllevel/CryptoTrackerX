@@ -147,17 +147,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Asu-yv-A9Q" userLabel="Chart View" customClass="BarChartView" customModule="Charts">
-                                <rect key="frame" x="0.0" y="88" width="375" height="342"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Asu-yv-A9Q" userLabel="Chart View" customClass="CandleStickChartView" customModule="Charts">
+                                <rect key="frame" x="0.0" y="138" width="375" height="340"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="340" id="edg-eb-3vl"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Asu-yv-A9Q" firstAttribute="leading" secondItem="JJu-nd-1Wn" secondAttribute="leading" id="2a6-1o-LKF"/>
                             <constraint firstItem="Asu-yv-A9Q" firstAttribute="trailing" secondItem="JJu-nd-1Wn" secondAttribute="trailing" id="O0d-B2-cFp"/>
-                            <constraint firstItem="Asu-yv-A9Q" firstAttribute="top" secondItem="JJu-nd-1Wn" secondAttribute="top" id="OPg-5X-Znf"/>
-                            <constraint firstItem="Asu-yv-A9Q" firstAttribute="bottom" secondItem="JJu-nd-1Wn" secondAttribute="bottom" constant="-348" id="tTX-gq-ZQh"/>
+                            <constraint firstItem="Asu-yv-A9Q" firstAttribute="top" secondItem="JJu-nd-1Wn" secondAttribute="top" constant="50" id="OPg-5X-Znf"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="JJu-nd-1Wn"/>
                     </view>

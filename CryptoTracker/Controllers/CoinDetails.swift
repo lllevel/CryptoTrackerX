@@ -9,7 +9,7 @@
 import UIKit
 import Charts
 
-var candles = [CoinProperties]()
+var candles = [CandleProperties]()
 
 //enum Option {
 //
@@ -23,51 +23,73 @@ var candles = [CoinProperties]()
 //    }
 //}
 
-class CoinDetails: UIViewController, ChartViewDelegate {
+class CoinDetails: UIViewController {
     
     @IBOutlet weak var chartView: CandleStickChartView!
+    var spinner: UIActivityIndicatorView!
 //    private var optionsTableView: UITableView? = nil
 //    var options: [Option]!
+//    var shouldHideData: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
+        startSpinner()
         sendRequestCandleData()
-        setDataCount(5, range: 5)
+        print(Date(timeIntervalSince1970: 1532476800))
+//        setDataCount(25, range: 15)
 
 //        let unitsSold = [20.0, 4.0, 6.0, 3.0, 12.0, 16.0, 4.0, 18.0, 2.0, 4.0, 5.0, 4.0]
 //
 //        setChart(dataPoints: months, values: unitsSold)
 //        self.options = [.toggleShadowColorSameAsCandle,
 //                        .toggleShowCandleBar]
-//        
-        chartView.delegate = self
+
 //
+        chartView.noDataText = ""
         chartView.chartDescription?.enabled = false
-//
-        chartView.dragEnabled = false
+        
+        chartView.dragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.maxVisibleCount = 200
+        chartView.maxVisibleCount = 26
         chartView.pinchZoomEnabled = true
-//
-        chartView.legend.horizontalAlignment = .right
-        chartView.legend.verticalAlignment = .top
-        chartView.legend.orientation = .vertical
-        chartView.legend.drawInside = false
-        chartView.legend.font = UIFont(name: "HelveticaNeue-Light", size: 10)!
+        
+        chartView.legend.form = .none
+        
+//        chartView.legend.horizontalAlignment = .right
+//        chartView.legend.verticalAlignment = .top
+//        chartView.legend.orientation = .horizontal
+//        chartView.legend.drawInside = true
+//        chartView.legend.font = UIFont(name: "HelveticaNeue-Light", size: 10)!
 //
         chartView.leftAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 10)!
-        chartView.leftAxis.spaceTop = 0.3
-        chartView.leftAxis.spaceBottom = 0.3
-        chartView.leftAxis.axisMinimum = 0
-//
+        chartView.leftAxis.spaceTop = 0.1
+        chartView.leftAxis.spaceBottom = 0.1
+//        chartView.leftAxis.axisMinimum = 5000
+        
         chartView.rightAxis.enabled = false
-//
+        
         chartView.xAxis.labelPosition = .bottom
         chartView.xAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 10)!
         
         
+        
+        
     }
+    
+//        required init?(coder aDecoder: NSCoder) {
+//            super.init(coder: aDecoder)
+//            self.initialize()
+//        }
+//
+//        override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+//            super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+//            self.initialize()
+//        }
+//
+//        private func initialize() {
+//            self.edgesForExtendedLayout = []
+//        }
 
     func setupNavigationBar() {
         let label = UILabel()
@@ -84,45 +106,34 @@ class CoinDetails: UIViewController, ChartViewDelegate {
         navigationItem.titleView = stackView
     }
     
-//    func setChart(dataPoints: [String], values: [Double]) {
-//        barChartView.noDataText = "You need to provide data for the chart."
-//        var dataEntries: [BarChartDataEntry] = []
-//
-//        for i in 0..<dataPoints.count {
-//            let dataEntry = BarChartDataEntry(x: Double(i), yValues: [values[i]])
-////            (value: values[i], xIndex: i)
-//            dataEntries.append(dataEntry)
-//        }
-//
-//        let chartDataSet = BarChartDataSet(values: dataEntries, label: "Units Sold")
-////        (yVals: dataEntries, label: "Units Sold")
-//        let chartData = BarChartData(dataSet: chartDataSet)
-////        (xVals: months, dataSet: chartDataSet)
-//        barChartView.data = chartData
-//    }
-    
     func setDataCount(_ count: Int, range: UInt32) {
         let yVals1 = (0..<count).map { (i) -> CandleChartDataEntry in
-            let val: Double = 400
-            let high: Double = 100
-            let low: Double = 60
-            let open: Double = 70
-            let close: Double = 90
-            let even = i % 2 == 0
-         
-            return CandleChartDataEntry(x: Double(i), shadowH: val + high, shadowL: val - low, open: even ? val + open : val - open, close: even ? val - close : val + close)
+
+//            let mult = Double(range + 1)
+            let high: Double = candles[i].high
+            let low: Double = candles[i].low
+            let open: Double = candles[i].open
+            let close: Double = candles[i].close
+//            let even = i % 2 == 0
+
+
+            
+            return CandleChartDataEntry(x: Double(i), shadowH: high, shadowL: low, open: open, close: close)
+
+            
+            
         }
         
-        let set1 = CandleChartDataSet(values: yVals1, label: "Data Set")
+        let set1 = CandleChartDataSet(values: yVals1, label: "")
         set1.axisDependency = .left
-        set1.setColor(UIColor(white: 80/255, alpha: 1))
+//        set1.setColor(UIColor(white: 80/255, alpha: 1))
         set1.drawIconsEnabled = false
         set1.shadowColor = .darkGray
-        set1.shadowWidth = 0.7
+        set1.shadowWidth = 1
         set1.decreasingColor = .red
         set1.decreasingFilled = true
-        set1.increasingColor = UIColor(red: 122/255, green: 242/255, blue: 84/255, alpha: 1)
-        set1.increasingFilled = false
+        set1.increasingColor = .green
+        set1.increasingFilled = true
         set1.neutralColor = .blue
         
         let data = CandleChartData(dataSet: set1)
@@ -148,7 +159,7 @@ class CoinDetails: UIViewController, ChartViewDelegate {
     
     func sendRequestCandleData() {
         var candlesBuffer = [CandleProperties]()
-        let jsonUrl = "https://min-api.cryptocompare.com/data/histoday?fsym=\(symbolSelectedRow)&tsym=USD&limit=100"
+        let jsonUrl = "https://min-api.cryptocompare.com/data/histoday?fsym=\(symbolSelectedRow)&tsym=USD&limit=25"
         
         DispatchQueue.global(qos: .utility).async {
             guard let url = URL(string: jsonUrl) else { return }
@@ -159,11 +170,13 @@ class CoinDetails: UIViewController, ChartViewDelegate {
                     let websiteDescription = try
                         
                     JSONDecoder().decode(CandleData.self, from: data)
-                    for i in 0..<100 {
+                    for i in 0..<25 {
                         candlesBuffer.append(websiteDescription.Data[i])
                     }
+                    candles = candlesBuffer
                     DispatchQueue.main.async {
-//                        self.setDataCount(1, range: 10)
+                        self.setDataCount(25, range: 0)
+                        self.spinner.stopAnimating()
                     }
                 } catch let error {
                     print(error)
@@ -171,4 +184,26 @@ class CoinDetails: UIViewController, ChartViewDelegate {
                 }.resume()
         }
     }
+    
+    func startSpinner() {
+        spinner = UIActivityIndicatorView(style: .whiteLarge)
+        spinner.color = UIColor(ciColor: .black)
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.hidesWhenStopped = true
+        chartView.addSubview(spinner)
+        NSLayoutConstraint(item: spinner, attribute: .centerX, relatedBy: .equal, toItem: chartView, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: spinner, attribute: .centerY, relatedBy: .equal, toItem: chartView, attribute: .centerY, multiplier: 1, constant: 0).isActive = true
+        
+        spinner.startAnimating()
+    }
+    
+//        func updateChartData() {
+//            if self.shouldHideData {
+//                chartView.data = nil
+//                return
+//            }
+//    
+//            self.setDataCount(5, range: 10)
+//        }
+
 }
