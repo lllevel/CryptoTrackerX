@@ -36,7 +36,6 @@ class CoinDetails: UIViewController {
         setupNavigationBar()
         startSpinner()
         sendRequestCandleData()
-        print(Date(timeIntervalSince1970: 1532476800))
 //        setDataCount(25, range: 15)
 
 //        let unitsSold = [20.0, 4.0, 6.0, 3.0, 12.0, 16.0, 4.0, 18.0, 2.0, 4.0, 5.0, 4.0]
@@ -115,15 +114,16 @@ class CoinDetails: UIViewController {
             let open: Double = candles[i].open
             let close: Double = candles[i].close
 //            let even = i % 2 == 0
-
-
+            let timeInterval = candles[i].time
+            let time = Date(timeIntervalSince1970: TimeInterval(candles[i].time))
+            let time2 = toString(date: time, format: "dd")
+            print(time2)
             
             return CandleChartDataEntry(x: Double(i), shadowH: high, shadowL: low, open: open, close: close)
 
             
-            
         }
-        
+    
         let set1 = CandleChartDataSet(values: yVals1, label: "")
         set1.axisDependency = .left
 //        set1.setColor(UIColor(white: 80/255, alpha: 1))
@@ -139,7 +139,6 @@ class CoinDetails: UIViewController {
         let data = CandleChartData(dataSet: set1)
         chartView.data = data
     }
-    
 //    func optionTapped(_ option: Option) {
 //        switch option {
 //        case .toggleShadowColorSameAsCandle:
@@ -197,6 +196,13 @@ class CoinDetails: UIViewController {
         spinner.startAnimating()
     }
     
+    func toString(date: Date, format: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        let dateResult = formatter.string(from: date as Date)
+        return dateResult
+    }
+    
 //        func updateChartData() {
 //            if self.shouldHideData {
 //                chartView.data = nil
@@ -207,3 +213,10 @@ class CoinDetails: UIViewController {
 //        }
 
 }
+
+//extension CandleChartDataEntry {
+//
+//    override public init(x: Double, y: Double) {
+//        <#code#>
+//    }
+//}
