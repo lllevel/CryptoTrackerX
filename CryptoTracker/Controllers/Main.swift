@@ -15,6 +15,7 @@ var rates = [CoinProperties]()
 var images = [UIImage]()
 var idSelectedRow = Int()
 var symbolSelectedRow = String()
+var nameSelectedRow = String()
 var globalData: GlobalData!
 
 class Main: UIViewController {
@@ -107,6 +108,7 @@ class Main: UIViewController {
                     }
                 } catch let error {
                     print(error)
+                    return
                 }
             }.resume()
         }
@@ -129,6 +131,7 @@ class Main: UIViewController {
                     }
                 } catch let error {
                     print(error)
+                    return
                 }
             }.resume()
         }

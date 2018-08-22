@@ -17,6 +17,7 @@ struct CoinProperties: Decodable {
     let rank: Int
     let symbol: String
     let quotes: [String: CoinPrice]
+    let name: String
 }
 
 struct CoinPrice: Decodable {

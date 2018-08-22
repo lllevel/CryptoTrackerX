@@ -36,6 +36,8 @@ class CoinDetails: UIViewController {
         setupNavigationBar()
         startSpinner()
         sendRequestCandleData()
+        
+//        nameView.text = nameSelectedRow
 //        setDataCount(25, range: 15)
 
 //        let unitsSold = [20.0, 4.0, 6.0, 3.0, 12.0, 16.0, 4.0, 18.0, 2.0, 4.0, 5.0, 4.0]
@@ -92,7 +94,7 @@ class CoinDetails: UIViewController {
 
     func setupNavigationBar() {
         let label = UILabel()
-        label.text = symbolSelectedRow
+        label.text = nameSelectedRow
         
         let imageVIew = UIImageView(image: images[idSelectedRow])
         imageVIew.contentMode = .scaleAspectFit
@@ -114,10 +116,10 @@ class CoinDetails: UIViewController {
             let open: Double = candles[i].open
             let close: Double = candles[i].close
 //            let even = i % 2 == 0
-            let timeInterval = candles[i].time
-            let time = Date(timeIntervalSince1970: TimeInterval(candles[i].time))
-            let time2 = toString(date: time, format: "dd")
-            print(time2)
+            
+//            let timeInterval = candles[i].time
+//            let time = Date(timeIntervalSince1970: TimeInterval(candles[i].time))
+//            let time2 = toString(date: time, format: "dd")
             
             return CandleChartDataEntry(x: Double(i), shadowH: high, shadowL: low, open: open, close: close)
 
@@ -127,17 +129,24 @@ class CoinDetails: UIViewController {
         let set1 = CandleChartDataSet(values: yVals1, label: "")
         set1.axisDependency = .left
 //        set1.setColor(UIColor(white: 80/255, alpha: 1))
-        set1.drawIconsEnabled = false
-        set1.shadowColor = .darkGray
+//        set1.drawVerticalHighlightIndicatorEnabled = false
+//        set1.drawValuesEnabled = false
+//        set1.drawIconsEnabled = false
+//        set1.shadowColor = .darkGray
         set1.shadowWidth = 1
         set1.decreasingColor = .red
         set1.decreasingFilled = true
         set1.increasingColor = .green
         set1.increasingFilled = true
         set1.neutralColor = .blue
+        set1.shadowColor = .red
+        
+        set1.shadowColorSameAsCandle = true
+        
         
         let data = CandleChartData(dataSet: set1)
         chartView.data = data
+        
     }
 //    func optionTapped(_ option: Option) {
 //        switch option {
@@ -159,6 +168,7 @@ class CoinDetails: UIViewController {
     func sendRequestCandleData() {
         var candlesBuffer = [CandleProperties]()
         let jsonUrl = "https://min-api.cryptocompare.com/data/histoday?fsym=\(symbolSelectedRow)&tsym=USD&limit=25"
+        var jsonCount = 0
         
         DispatchQueue.global(qos: .utility).async {
             guard let url = URL(string: jsonUrl) else { return }
@@ -167,18 +177,27 @@ class CoinDetails: UIViewController {
                 
                 do {
                     let websiteDescription = try
-                        
                     JSONDecoder().decode(CandleData.self, from: data)
-                    for i in 0..<25 {
+                    jsonCount = websiteDescription.Data.count - 1
+                    guard jsonCount >= 0 else {
+                     self.chartView.noDataText = "No coin data"
+                        DispatchQueue.main.async {
+                            self.spinner.stopAnimating()
+                        }
+                        return
+                    }
+                    
+                    for i in 0..<jsonCount {
                         candlesBuffer.append(websiteDescription.Data[i])
                     }
                     candles = candlesBuffer
                     DispatchQueue.main.async {
-                        self.setDataCount(25, range: 0)
+                        self.setDataCount(jsonCount, range: 0)
                         self.spinner.stopAnimating()
                     }
                 } catch let error {
                     print(error)
+                    return
                 }
                 }.resume()
         }

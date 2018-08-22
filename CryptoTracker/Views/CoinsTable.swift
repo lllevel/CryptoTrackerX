@@ -42,6 +42,7 @@ class CoinsTable: UITableView, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         idSelectedRow = indexPath.row
         symbolSelectedRow = rates[indexPath.row].symbol
+        nameSelectedRow = rates[indexPath.row].name
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
