@@ -11,25 +11,30 @@ import Charts
 
 var candles = [CandleProperties]()
 
-//enum Option {
-//
-//    case toggleShadowColorSameAsCandle
-//    case toggleShowCandleBar
-//    var label: String {
-//        switch self {
-//        case .toggleShadowColorSameAsCandle: return "Toggle shadow same color"
-//        case .toggleShowCandleBar: return "Toggle show candle bar"
-//        }
-//    }
-//}
-
 class CoinDetails: UIViewController {
     
     @IBOutlet weak var chartView: CandleStickChartView!
+    @IBOutlet weak var rank: UILabel!
+    @IBOutlet weak var price: UILabel!
+    @IBOutlet weak var period1h: UILabel!
+    @IBOutlet weak var period24h: UILabel!
+    @IBOutlet weak var period7D: UILabel!
+    @IBOutlet weak var percent1h: UILabel!
+    @IBOutlet weak var percent24h: UILabel!
+    @IBOutlet weak var percent7D: UILabel!
+    @IBOutlet weak var marketCap: UILabel!
+    @IBOutlet weak var volume24H: UILabel!
+    @IBOutlet weak var maxSupply: UILabel!
+    @IBOutlet weak var circSupply: UILabel!
+    @IBOutlet weak var marketCapHeader: UILabel!
+    @IBOutlet weak var maxSupplyHeader: UILabel!
+    @IBOutlet weak var volume24HHeader: UILabel!
+    @IBOutlet weak var circSupplyHeader: UILabel!
+    @IBOutlet weak var period: UILabel!
+    @IBOutlet weak var percent: UILabel!
+    
     var spinner: UIActivityIndicatorView!
-//    private var optionsTableView: UITableView? = nil
-//    var options: [Option]!
-//    var shouldHideData: Bool = false
+    let coinsTable = CoinsTable()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,60 +42,63 @@ class CoinDetails: UIViewController {
         startSpinner()
         sendRequestCandleData()
         
-//        nameView.text = nameSelectedRow
-//        setDataCount(25, range: 15)
+        rank.text = String(coinRank)
 
-//        let unitsSold = [20.0, 4.0, 6.0, 3.0, 12.0, 16.0, 4.0, 18.0, 2.0, 4.0, 5.0, 4.0]
-//
-//        setChart(dataPoints: months, values: unitsSold)
-//        self.options = [.toggleShadowColorSameAsCandle,
-//                        .toggleShowCandleBar]
-
-//
         chartView.noDataText = ""
         chartView.chartDescription?.enabled = false
-        
         chartView.dragEnabled = true
         chartView.setScaleEnabled(true)
         chartView.maxVisibleCount = 26
         chartView.pinchZoomEnabled = true
-        
         chartView.legend.form = .none
-        
-//        chartView.legend.horizontalAlignment = .right
-//        chartView.legend.verticalAlignment = .top
-//        chartView.legend.orientation = .horizontal
-//        chartView.legend.drawInside = true
-//        chartView.legend.font = UIFont(name: "HelveticaNeue-Light", size: 10)!
-//
         chartView.leftAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 10)!
         chartView.leftAxis.spaceTop = 0.1
         chartView.leftAxis.spaceBottom = 0.1
-//        chartView.leftAxis.axisMinimum = 5000
-        
         chartView.rightAxis.enabled = false
-        
         chartView.xAxis.labelPosition = .bottom
         chartView.xAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 10)!
         
+        rank.text = "Rank \(coinRank)"
+        price.text = "Price \(coinPrice)"
+        period1h.text = "1H"
+        period24h.text = "24H"
+        period7D.text = "7D"
+        marketCapHeader.text = "Market Cap"
+        maxSupplyHeader.text = "Max Supply"
+        volume24HHeader.text = "Volume 24H"
+        circSupplyHeader.text = "Circ. Supply"
         
+        percent1h.text = String(coinPeriod1H) + "%"
+        percent24h.text = String(coinPeriod24H) + "%"
+        percent7D.text = String(coinPeriod7D) + "%"
         
+        marketCap.text = coinMarketCap
+        maxSupply.text = coinMaxSupply
+        volume24H.text = coinVolume24H
+        circSupply.text = coinCircSupply
+        
+        period.text = "Period"
+        percent.text = "Percent"
+        
+        if coinPeriod1H < 0 {
+            percent1h.textColor = UIColor(displayP3Red: 0.7, green: 0, blue: 0, alpha: 1)
+        } else {
+            percent1h.textColor = UIColor(displayP3Red: 0, green: 0.6, blue: 0, alpha: 1)
+        }
+        
+        if coinPeriod24H < 0 {
+            percent24h.textColor = UIColor(displayP3Red: 0.7, green: 0, blue: 0, alpha: 1)
+        } else {
+            percent24h.textColor = UIColor(displayP3Red: 0, green: 0.6, blue: 0, alpha: 1)
+        }
+        
+        if coinPeriod1H < 0 {
+            percent7D.textColor = UIColor(displayP3Red: 0.7, green: 0, blue: 0, alpha: 1)
+        } else {
+            percent7D.textColor = UIColor(displayP3Red: 0, green: 0.6, blue: 0, alpha: 1)
+        }
         
     }
-    
-//        required init?(coder aDecoder: NSCoder) {
-//            super.init(coder: aDecoder)
-//            self.initialize()
-//        }
-//
-//        override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-//            super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-//            self.initialize()
-//        }
-//
-//        private func initialize() {
-//            self.edgesForExtendedLayout = []
-//        }
 
     func setupNavigationBar() {
         let label = UILabel()
@@ -125,49 +133,26 @@ class CoinDetails: UIViewController {
 
             
         }
-    
         let set1 = CandleChartDataSet(values: yVals1, label: "")
+        
         set1.axisDependency = .left
-//        set1.setColor(UIColor(white: 80/255, alpha: 1))
-//        set1.drawVerticalHighlightIndicatorEnabled = false
-//        set1.drawValuesEnabled = false
-//        set1.drawIconsEnabled = false
-//        set1.shadowColor = .darkGray
         set1.shadowWidth = 1
-        set1.decreasingColor = .red
+        set1.decreasingColor = UIColor(displayP3Red: 0.7, green: 0, blue: 0, alpha: 1)
         set1.decreasingFilled = true
-        set1.increasingColor = .green
+        set1.increasingColor = UIColor(displayP3Red: 0, green: 0.6, blue: 0, alpha: 1)
         set1.increasingFilled = true
-        set1.neutralColor = .blue
-        set1.shadowColor = .red
-        
+        set1.neutralColor = UIColor(displayP3Red: 0, green: 0.6, blue: 0, alpha: 1)
+        set1.shadowColor = UIColor(displayP3Red: 0.7, green: 0, blue: 0, alpha: 1)
         set1.shadowColorSameAsCandle = true
-        
         
         let data = CandleChartData(dataSet: set1)
         chartView.data = data
         
     }
-//    func optionTapped(_ option: Option) {
-//        switch option {
-//        case .toggleShadowColorSameAsCandle:
-//            for set in chartView.data!.dataSets as! [CandleChartDataSet] {
-//                set.shadowColorSameAsCandle = !set.shadowColorSameAsCandle
-//            }
-//            chartView.notifyDataSetChanged()
-//        case .toggleShowCandleBar:
-//            for set in chartView.data!.dataSets as! [CandleChartDataSet] {
-//                set.showCandleBar = !set.showCandleBar
-//            }
-//            chartView.notifyDataSetChanged()
-//        }
-//    }
-    
-
     
     func sendRequestCandleData() {
         var candlesBuffer = [CandleProperties]()
-        let jsonUrl = "https://min-api.cryptocompare.com/data/histoday?fsym=\(symbolSelectedRow)&tsym=USD&limit=25"
+        let jsonUrl = "https://min-api.cryptocompare.com/data/histoday?fsym=\(symbolSelectedRow)&tsym=USD&limit=24"
         var jsonCount = 0
         
         DispatchQueue.global(qos: .utility).async {
@@ -178,8 +163,8 @@ class CoinDetails: UIViewController {
                 do {
                     let websiteDescription = try
                     JSONDecoder().decode(CandleData.self, from: data)
-                    jsonCount = websiteDescription.Data.count - 1
-                    guard jsonCount >= 0 else {
+                    jsonCount = websiteDescription.Data.count
+                    guard jsonCount >= 1 else {
                      self.chartView.noDataText = "No coin data"
                         DispatchQueue.main.async {
                             self.spinner.stopAnimating()
@@ -199,7 +184,7 @@ class CoinDetails: UIViewController {
                     print(error)
                     return
                 }
-                }.resume()
+            }.resume()
         }
     }
     
@@ -221,21 +206,5 @@ class CoinDetails: UIViewController {
         let dateResult = formatter.string(from: date as Date)
         return dateResult
     }
-    
-//        func updateChartData() {
-//            if self.shouldHideData {
-//                chartView.data = nil
-//                return
-//            }
-//    
-//            self.setDataCount(5, range: 10)
-//        }
-
 }
 
-//extension CandleChartDataEntry {
-//
-//    override public init(x: Double, y: Double) {
-//        <#code#>
-//    }
-//}

@@ -8,8 +8,6 @@
 
 import UIKit
 
-var url = String()
-var url2 = String()
 var key = String()
 var rates = [CoinProperties]()
 var images = [UIImage]()
