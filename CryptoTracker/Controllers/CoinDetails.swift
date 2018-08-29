@@ -35,20 +35,23 @@ class CoinDetails: UIViewController {
     
     var spinner: UIActivityIndicatorView!
     let coinsTable = CoinsTable()
+    let candleCount: Double = 30
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         startSpinner()
         sendRequestCandleData()
-        
-        rank.text = String(coinRank)
-
+        setChartView()
+        setLabels()
+    }
+    
+    func setChartView() {
         chartView.noDataText = ""
         chartView.chartDescription?.enabled = false
         chartView.dragEnabled = true
         chartView.setScaleEnabled(true)
-        chartView.maxVisibleCount = 26
+        chartView.maxVisibleCount = Int(candleCount * 0.8)
         chartView.pinchZoomEnabled = true
         chartView.legend.form = .none
         chartView.leftAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 10)!
@@ -57,12 +60,18 @@ class CoinDetails: UIViewController {
         chartView.rightAxis.enabled = false
         chartView.xAxis.labelPosition = .bottom
         chartView.xAxis.labelFont = UIFont(name: "HelveticaNeue-Light", size: 10)!
-        
+    }
+    
+    func setLabels() {
         rank.text = "Rank \(coinRank)"
         price.text = "Price \(coinPrice)"
+        
+        period.text = "Period"
+        percent.text = "Percent"
         period1h.text = "1H"
         period24h.text = "24H"
         period7D.text = "7D"
+        
         marketCapHeader.text = "Market Cap"
         maxSupplyHeader.text = "Max Supply"
         volume24HHeader.text = "Volume 24H"
@@ -77,9 +86,6 @@ class CoinDetails: UIViewController {
         volume24H.text = coinVolume24H
         circSupply.text = coinCircSupply
         
-        period.text = "Period"
-        percent.text = "Percent"
-        
         if coinPeriod1H < 0 {
             percent1h.textColor = UIColor(displayP3Red: 0.7, green: 0, blue: 0, alpha: 1)
         } else {
@@ -92,12 +98,11 @@ class CoinDetails: UIViewController {
             percent24h.textColor = UIColor(displayP3Red: 0, green: 0.6, blue: 0, alpha: 1)
         }
         
-        if coinPeriod1H < 0 {
+        if coinPeriod7D < 0 {
             percent7D.textColor = UIColor(displayP3Red: 0.7, green: 0, blue: 0, alpha: 1)
         } else {
             percent7D.textColor = UIColor(displayP3Red: 0, green: 0.6, blue: 0, alpha: 1)
         }
-        
     }
 
     func setupNavigationBar() {
@@ -152,7 +157,7 @@ class CoinDetails: UIViewController {
     
     func sendRequestCandleData() {
         var candlesBuffer = [CandleProperties]()
-        let jsonUrl = "https://min-api.cryptocompare.com/data/histoday?fsym=\(symbolSelectedRow)&tsym=USD&limit=24"
+        let jsonUrl = "https://min-api.cryptocompare.com/data/histoday?fsym=\(symbolSelectedRow)&tsym=USD&limit=\(candleCount)"
         var jsonCount = 0
         
         DispatchQueue.global(qos: .utility).async {
@@ -171,7 +176,6 @@ class CoinDetails: UIViewController {
                         }
                         return
                     }
-                    
                     for i in 0..<jsonCount {
                         candlesBuffer.append(websiteDescription.Data[i])
                     }

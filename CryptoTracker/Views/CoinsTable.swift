@@ -62,7 +62,6 @@ class CoinsTable: UITableView, UITableViewDelegate, UITableViewDataSource {
         nameSelectedRow = rates[indexPath.row].name
         coinRank = rates[indexPath.row].rank
         coinPrice = String(format: priceFormat, rates[indexPath.row].quotes[key]!.price) + ticker
-//        coinMarketCap = String(format: marketCapFormat, rates[indexPath.row].quotes[key]!.market_cap) + ticker
         coinMarketCap = String(mainHeaderLabels.separatedNumber(rates[indexPath.row].quotes[key]!.market_cap)) + "$"
         coinPeriod1H = rates[indexPath.row].quotes[key]!.percent_change_1h
         coinPeriod24H = rates[indexPath.row].quotes[key]!.percent_change_24h
@@ -70,7 +69,7 @@ class CoinsTable: UITableView, UITableViewDelegate, UITableViewDataSource {
         if rates[indexPath.row].max_supply != nil {
             coinMaxSupply = String(mainHeaderLabels.separatedNumber(rates[indexPath.row].max_supply!)) + " " + symbolSelectedRow
         } else {
-            coinMaxSupply = "0 " + symbolSelectedRow
+            coinMaxSupply = "\u{221E} " + symbolSelectedRow
         }
         coinVolume24H = String(mainHeaderLabels.separatedNumber(rates[indexPath.row].quotes[key]!.volume_24h)) + "$"
         coinCircSupply = String(mainHeaderLabels.separatedNumber(rates[indexPath.row].circulating_supply)) + " " + symbolSelectedRow
